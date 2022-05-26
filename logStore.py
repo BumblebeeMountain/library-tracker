@@ -40,7 +40,6 @@ class LogStore():
         return dayIndex + hrIndex + minIndex
 
     def addToLog(self, time, occ):
-        print(time)
         index = self.timeToIndex(time)
         dQ = self.__lr * (occ - self.__log[index])
         self.__log[index] += dQ
