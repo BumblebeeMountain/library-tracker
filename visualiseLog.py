@@ -46,10 +46,11 @@ def plotDay(log, dayIndex):
     xTickLabels[0] = dayLabels[dayIndex]
     xTickLabels[-1] = dayLabels[(dayIndex+1)%7]
 
-    plotGraph(arrToPlot, xTicks, xTickLabels)
+    title = f"Occupancy in Diamond for {dayLabels[dayIndex]}"
+    plotGraph(arrToPlot, xTicks, xTickLabels, title)
 
-def plotGraph(arrToPlot, xTicks=None, xTickLabels=None, xLabel="Time", yLabel="Occupancy", grid=True):
-    fig, ax = plt.subplots()
+def plotGraph(arrToPlot, xTicks=None, xTickLabels=None, title=None, xLabel="Time", yLabel="Occupancy", grid=True):
+    fig, ax = plt.subplots(figsize=(12,6))
     ax.plot(arrToPlot)
     plt.xlabel(xLabel)
     plt.ylabel(yLabel)
@@ -61,6 +62,9 @@ def plotGraph(arrToPlot, xTicks=None, xTickLabels=None, xLabel="Time", yLabel="O
     if grid:
         ax.grid(b=True, which='major', ls='--')
 
+    if title:
+        plt.title(title)
+
     plt.tight_layout()
     plt.show()
 
@@ -71,7 +75,7 @@ def avgDay(log):
 
     xTicks = [i for i in range(0, len(avg)+1, int(60/log.getRes()*2))]
     xTickLabels = [f"0{c}:00" for c in range(0, 9, 2)] + [f"{c}:00" for c in range(10, 25, 2)]
-    plotGraph(avg, xTicks, xTickLabels, yLabel="Average Occupancy")
+    plotGraph(avg, xTicks, xTickLabels, yLabel="Average Occupancy", title="Average day")
 
 def main():
     diaLogName = "diaLog.db"
@@ -80,7 +84,7 @@ def main():
     log = getLog(diaLogName)
     # plotLog(log)
     plotDay(log, dayDict["fri"])
-    # avgDay(log)
+    avgDay(log)
 
 if __name__ == "__main__":
     main()
