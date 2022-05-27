@@ -53,6 +53,12 @@ class LogStore():
     def getRes(self):
         return self.__resolution
 
+    def setLR(self, lr):
+        self.__lr = lr
+
+    def setLog(self, log):
+        self.__log = log
+
     def save(self):
         with open(self.__logName, "wb") as f:
             pickle.dump(self, f)
