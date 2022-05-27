@@ -7,6 +7,7 @@ visualiseLog.py
 import numpy as np
 import matplotlib.pyplot as plt
 from logStore import LogStore
+from datetime import datetime
 import pickle
 
 def getLog(logName):
@@ -68,13 +69,53 @@ def plotGraph(arrToPlot, xTicks=None, xTickLabels=None, title=None, xLabel="Time
     plt.tight_layout()
     plt.show()
 
+def compDay(log):
+    index = log.timeToIndex("06:00", 0)
+    timeLog = log.getLog()
+
+    timeArr = np.array(timeLog[index:])
+    timeArr = np.append(timeArr, timeLog[:index])
+
+    timeArr = timeArr.reshape((7,-1))
+
+    xTicks = [i for i in range(0, timeArr.shape[1]+1, int(60/log.getRes()*2))]
+    xTickLabels = [f"0{c}:00" for c in range(0, 9, 2)] + [f"{c}:00" for c in range(10, 24, 2)]
+    for i in range(3):
+        rotateArr(xTickLabels)
+    xTickLabels.append("06:00")
+
+    fig, ax = plt.subplots(figsize=(12,6))
+    dayLabels = np.array(["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"])
+
+    plt.xlabel("Time")
+    plt.ylabel("Occupancy")
+    plt.title("Inter-day comparison of occupancy in The Diamond")
+    ax.set_xticks(xTicks)
+    ax.set_xticklabels(xTickLabels, rotation=30)
+
+    for i, day in enumerate(timeArr):
+        ax.plot(day, label=dayLabels[i])
+    ax.grid(b=True, which='major', ls='--')
+    plt.legend()
+    plt.tight_layout()
+    plt.show()
 
 def avgDay(log):
-    timeArr = np.array(log.getLog()).reshape((7,-1))
+    index = log.timeToIndex("06:00", 0)
+    timeLog = log.getLog()
+
+    timeArr = np.array(timeLog[index:])
+    timeArr = np.append(timeArr, timeLog[:index])
+
+    timeArr = timeArr.reshape((7,-1))
+
     avg = np.mean(timeArr, axis=0)
 
     xTicks = [i for i in range(0, len(avg)+1, int(60/log.getRes()*2))]
-    xTickLabels = [f"0{c}:00" for c in range(0, 9, 2)] + [f"{c}:00" for c in range(10, 25, 2)]
+    xTickLabels = [f"0{c}:00" for c in range(0, 9, 2)] + [f"{c}:00" for c in range(10, 24, 2)]
+    for i in range(3):
+        rotateArr(xTickLabels)
+    xTickLabels.append("06:00")
     plotGraph(avg, xTicks, xTickLabels, yLabel="Average Occupancy", title="Average day")
 
 def main():
@@ -83,8 +124,10 @@ def main():
 
     log = getLog(diaLogName)
     # plotLog(log)
-    plotDay(log, dayDict["fri"])
+    # plotDay(log, int(datetime.today().weekday()))
     avgDay(log)
+    compDay(log)
+
 
 if __name__ == "__main__":
     main()
