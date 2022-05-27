@@ -31,16 +31,20 @@ def plotDay(log, dayIndex):
     res = log.getRes()
 
     dayIndexes = [log.timeToIndex("06:00", i) for i in [dayIndex, dayIndex+1]]
+
     dayLabels = np.array(["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"])
 
     arrToPlot = timeArr[dayIndexes[0]: dayIndexes[1]]
+    if dayIndex+1 > 6:
+        arrToPlot = np.append(arrToPlot, timeArr[:log.timeToIndex("06:00", 0)])
 
     xTicks = [i for i in range(0, len(arrToPlot)+1, int(60/log.getRes()*2))]
-    xTickLabels = [f"0{c}:00" for c in range(0, 9, 2)] + [f"{c}:00" for c in range(10, 25, 2)]
+    xTickLabels = [f"0{c}:00" for c in range(0, 9, 2)] + [f"{c}:00" for c in range(10, 23, 2)]
     for i in range(3):
         rotateArr(xTickLabels)
+    xTickLabels.append("06:00")
     xTickLabels[0] = dayLabels[dayIndex]
-    xTickLabels[-1] = dayLabels[(dayIndex+1)%8]
+    xTickLabels[-1] = dayLabels[(dayIndex+1)%7]
 
     plotGraph(arrToPlot, xTicks, xTickLabels)
 
