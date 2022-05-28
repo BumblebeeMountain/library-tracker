@@ -7,6 +7,7 @@ visualiseLog.py
 import numpy as np
 import matplotlib.pyplot as plt
 from logStore import LogStore
+from main import getOcc
 from datetime import datetime
 import pickle
 
@@ -50,11 +51,21 @@ def plotDay(log, dayIndex):
     title = f"Occupancy in Diamond for {dayLabels[dayIndex]}"
     plotGraph(arrToPlot, xTicks, xTickLabels, title)
 
-def plotGraph(arrToPlot, xTicks=None, xTickLabels=None, title=None, xLabel="Time", yLabel="Occupancy", grid=True):
+def showCurrent(log, maxOffset):
+    occ, time = getOcc("dmd")
+    loc = log.timeToIndex(time, 0) - log.timeToIndex("06:00", 0)
+    if loc < 0:
+        loc += maxOffset
+
+    plt.scatter(loc, occ, label="Current", color="red")#, marker='+', s=60)
+
+
+def plotGraph(arrToPlot, xTicks=None, xTickLabels=None, title=None, xLabel="Time", yLabel="Occupancy", grid=True, current=False):
     fig, ax = plt.subplots(figsize=(12,6))
     ax.plot(arrToPlot)
     plt.xlabel(xLabel)
     plt.ylabel(yLabel)
+
 
     if xTicks is not None and xTickLabels is not None:
         ax.set_xticks(xTicks)
@@ -65,6 +76,9 @@ def plotGraph(arrToPlot, xTicks=None, xTickLabels=None, title=None, xLabel="Time
 
     if title:
         plt.title(title)
+
+    if current:
+        showCurrent(len(arrToPlot))
 
     plt.tight_layout()
     plt.show()
@@ -98,6 +112,7 @@ def compDay(log):
     ax.grid(b=True, which='major', ls='--')
     plt.legend()
     plt.tight_layout()
+    showCurrent(log, timeArr.shape[1])
     plt.show()
 
 def avgDay(log):
